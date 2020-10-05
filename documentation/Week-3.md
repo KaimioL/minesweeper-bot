@@ -1,4 +1,4 @@
-# Week 1
+# Week 3
 
 ## Progress
 - Logical algorithm done
