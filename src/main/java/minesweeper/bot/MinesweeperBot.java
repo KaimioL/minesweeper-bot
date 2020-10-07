@@ -1,11 +1,12 @@
 
 package minesweeper.bot;
 
-import java.util.HashSet;
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.Random;
+// import java.util.HashSet;
+// import java.util.ArrayDeque;
 import java.util.ArrayList;
+// import java.util.HashSet;
+import minesweeper.collections.ArrayDeque;
+import minesweeper.collections.HashSet;
 import minesweeper.model.Board;
 import minesweeper.model.GameStats;
 import minesweeper.model.Move;
@@ -15,8 +16,8 @@ import minesweeper.model.Pair;
 import minesweeper.model.Square;    
 
 public class MinesweeperBot implements Bot {
-    private Deque<Square> flag_s = new ArrayDeque<Square>();
-    private Deque<Square> open_s = new ArrayDeque<Square>();
+    private ArrayDeque<Square> flag_s = new ArrayDeque<Square>();
+    private ArrayDeque<Square> open_s = new ArrayDeque<Square>();
 
     private int[][] odds;
     private int combination_count;
@@ -44,7 +45,8 @@ public class MinesweeperBot implements Bot {
             return new Move(MoveType.OPEN, temp_sq.getX(), temp_sq.getY());
         }
 
-        HashSet<Square> opened_squares = board.getOpenSquares(); 
+        HashSet<Square> opened_squares = new HashSet(board.getOpenSquares().toArray());
+        // HashSet<Square> opened_squares = board.getOpenSquares(); 
 
         for(Square square : opened_squares) {
             if(!(square.surroundingMines() == 0)) {
@@ -67,11 +69,10 @@ public class MinesweeperBot implements Bot {
             }
         }
         
-        Deque<Square> fringe_squares = findFringeSquares(board);
+        ArrayDeque<Square> fringe_squares = findFringeSquares(board);
         odds = new int[board.width][board.height];
 
         combination_count = 0;
-        if(fringe_squares.size() != 0) System.out.println(fringe_squares.size());
         findMineSubsets(board, fringe_squares, new HashSet<Square>(), new HashSet<Square>());
 
         int max = 0;
@@ -85,13 +86,10 @@ public class MinesweeperBot implements Bot {
                 }
                 if(odds[i][j] > max) {
                     max = odds[i][j];
-                    System.out.println("max:" + max);
                     max_square = board.getSquareAt(i, j);
                 }
             }
         }
-        if(max_square.getY() != 0)
-        System.out.println(max_square.getX() + " " + max_square.getY());
 
         return new Move(MoveType.FLAG, max_square.getX(), max_square.getY());
     }
@@ -321,7 +319,9 @@ public class MinesweeperBot implements Bot {
      * @return Unopened squares near opened squares
      */
     public ArrayDeque<Square> findFringeSquares(Board board) {
-        HashSet<Square> opened_squares = board.getOpenSquares();
+        HashSet<Square> opened_squares = new HashSet(board.getOpenSquares().toArray());
+        // HashSet<Square> opened_squares = board.getOpenSquares();
+
         ArrayDeque<Square> fringe_squares = new ArrayDeque<Square>();
         HashSet<Square> fringe_square_checker = new HashSet<Square>();
         for(Square square : opened_squares) {
@@ -343,16 +343,13 @@ public class MinesweeperBot implements Bot {
         return fringe_squares;
     }
 
-    public void findMineSubsets(Board board, Deque<Square> fringe_squares, HashSet<Square> opened_squares, HashSet<Square> flagged_squares) {
+    public void findMineSubsets(Board board, ArrayDeque<Square> fringe_squares, HashSet<Square> opened_squares, HashSet<Square> flagged_squares) {
         
-        // if(fringe_squares.size() != 0) System.out.println(fringe_squares);
         if(fringe_squares.isEmpty()) {
             for(Square temp : flagged_squares) odds[temp.getX()][temp.getY()]++;
             combination_count++;
             return;
         }
-
-        // System.out.println(opened_squares);
 
         Square square = fringe_squares.pop();
         
@@ -363,10 +360,7 @@ public class MinesweeperBot implements Bot {
                 return;
             }
             square = fringe_squares.pop();
-            // System.out.println(square);
         }
-
-        // System.out.println(fringe_squares.size());
 
         for(int i = -1; i < 2; i++){
             for(int j = -1; j < 2; j++){
@@ -394,11 +388,9 @@ public class MinesweeperBot implements Bot {
         HashSet<Square> temp_opened_squares = new HashSet<Square>(opened_squares);
         temp_opened_squares.add(square);
         HashSet<Square> temp_flagged_squares = new HashSet<Square>(flagged_squares);
-        Deque<Square> temp_fringe_squares = new ArrayDeque<Square>(fringe_squares);
+        ArrayDeque<Square> temp_fringe_squares = new ArrayDeque<Square>(fringe_squares);
 
-        // System.out.println("aaaa" + fringe_squares.size()); 
         findMineSubsets(board, temp_fringe_squares, temp_opened_squares, temp_flagged_squares);
-        // System.out.println("bbbb" + fringe_squares.size()); 
         
         flagged_squares.add(square);
         findMineSubsets(board, fringe_squares, opened_squares, flagged_squares);
