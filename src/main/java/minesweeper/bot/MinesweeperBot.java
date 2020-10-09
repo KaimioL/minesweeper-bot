@@ -16,8 +16,8 @@ import minesweeper.model.Pair;
 import minesweeper.model.Square;    
 
 public class MinesweeperBot implements Bot {
-    private ArrayDeque<Square> flag_s = new ArrayDeque<Square>();
-    private ArrayDeque<Square> open_s = new ArrayDeque<Square>();
+    public ArrayDeque<Square> flag_s = new ArrayDeque<Square>();
+    public ArrayDeque<Square> open_s = new ArrayDeque<Square>();
 
     private int[][] odds;
     private int combination_count;
